@@ -1,0 +1,33 @@
+{
+  "name": "Customer-support",
+  "version": "1.0.0",
+  "description": "This is about customer support that includes customer support, client management, licensing, etc.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "migrate": "npx prisma migrate dev"
+  },
+  "keywords": [
+    "client",
+    "customer",
+    "licensing"
+  ],
+  "author": "zaman",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.1.0",
+    "@types/express": "^5.0.0",
+    "amqplib": "^0.10.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9",
+    "prisma": "^6.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/amqplib": "^0.10.6"
+  }
+}

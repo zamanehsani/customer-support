@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  cs_db:
+    image: postgres:latest
+    container_name: postgres_customer_support
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: C2024c@24
+      POSTGRES_DB: customer_support
+    ports:
+      - "5435:5432"
+    volumes:
+      - Customer_Support_data:/var/lib/postgresql/data
+
+volumes:
+  Customer_Support_data:
