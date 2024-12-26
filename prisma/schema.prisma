@@ -28,6 +28,7 @@ model Clients {
   valid_to     DateTime?
   valid_from   DateTime?
   WhatsApp     String?
+  license      String?
   isActive     Boolean   @default(true)
   isSuspensed  Boolean   @default(false)
   

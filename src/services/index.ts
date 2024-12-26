@@ -1,16 +1,30 @@
 import { PrismaClient } from "@prisma/client";
 import rabbitmq from "../utils/rabbitmt";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
-export const addClient = async (data: any) => {
+export const addClient = async (form: any) => {
   try {
     // if data is not provided or not in the right format, send proper error message to the front
-    if (!data || Object.keys(data).length === 0) {
-      throw new Error("Please provide data");
+    if (!form || Object.keys(form).length === 0) {
+      throw new Error("Please provide the client data.");
     }
 
-    const client = await prisma.clients.create({ data });
+    // validate the data and set the license and expiration date
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined");
+    }
+    // generate a license for the client based on the created date and valide to date
+    const license = jwt.sign(
+      { id: "user", role: "user.role" },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1y",
+      }
+    );
+
+    const client = await prisma.clients.create({ data: { license, ...form } });
     await rabbitmq.publish("clients", "client.created", client);
     console.log("client created successfully and published to RabbitMQ");
     return client;
