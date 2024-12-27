@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import rabbitmq from "../utils/rabbitmt";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
@@ -25,8 +24,6 @@ export const addClient = async (form: any) => {
     );
 
     const client = await prisma.clients.create({ data: { license, ...form } });
-    await rabbitmq.publish("clients", "client.created", client);
-    console.log("client created successfully and published to RabbitMQ");
     return client;
   } catch (error) {
     console.error("Error adding client:", error);
@@ -43,12 +40,10 @@ export const updateClient = async (id: string, data: any) => {
    *
    */
   try {
-    console.log("udating client", id, data);
     const client = await prisma.clients.update({
       where: { id },
       data,
     });
-    await rabbitmq.publish("clients", "client.updated", client);
     return client;
   } catch (error) {
     console.error("Error updating client:", error);
@@ -63,7 +58,6 @@ export const removeClient = async (id: string) => {
     const client = await prisma.clients.delete({
       where: { id },
     });
-    await rabbitmq.publish("clients", "client.deleted", client);
     return client;
   } catch (error) {
     console.error("Error removing client:", error);
