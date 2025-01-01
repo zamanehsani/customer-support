@@ -31,5 +31,17 @@ model Clients {
   license      String?
   isActive     Boolean   @default(true)
   isSuspensed  Boolean   @default(false)
-  
+  logs         Logs[]
+}
+
+
+model Logs {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  user      String
+  action    String
+  details   String
+  userAgent String
+  client    Clients @relation(fields: [clientId], references: [id])
+  clientId  String
 }
