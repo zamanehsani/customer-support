@@ -1,7 +1,11 @@
-import { Request, Response } from "express";
+import { json, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+// import useragent from "useragent";
+// import requestIp from "request-ip";
+
+import { addLog } from "../utils/logs";
 
 const prisma = new PrismaClient();
 
@@ -18,7 +22,9 @@ export const login = async (req: Request, res: Response) => {
     if (!email || !password) {
       throw new Error("Please provide email and password");
     }
-    // check if the email is valid
+    /**
+     * TODO: implement a better email validation
+     */
     if (!email.includes("@")) {
       throw new Error("Please provide a valid email");
     }
@@ -46,6 +52,25 @@ export const login = async (req: Request, res: Response) => {
     });
 
     res.status(200).json({ user, token });
+
+    // save a log as well
+    console.log("saving loggs....");
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      req.headers["x-real-ip"] ||
+      req.headers["x-forwarded-for"];
+
+    const userAgent = req.headers["user-agent"];
+
+    // add a log
+    const log = await addLog({
+      user: user.id,
+      action: "user.login",
+      details: user.email + " logged in",
+      userAgent: userAgent + " " + ip,
+    });
+
     return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });

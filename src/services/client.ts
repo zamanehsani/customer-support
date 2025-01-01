@@ -31,7 +31,6 @@ export const addClient = async (req: Request, res: Response) => {
 
     return client;
   } catch (error) {
-    console.error("Error adding client:", error);
     throw new Error("Error adding client");
   }
 };
@@ -42,7 +41,6 @@ export const updateClient = async (id: string, data: any) => {
    * or date and or time is not the right format.
    * or id is not found
    * then send proper error message to the front
-   *
    */
   try {
     const client = await prisma.clients.update({
@@ -51,7 +49,6 @@ export const updateClient = async (id: string, data: any) => {
     });
     return client;
   } catch (error) {
-    console.error("Error updating client:", error);
     throw new Error("Error updating client");
   }
 };
@@ -65,7 +62,6 @@ export const removeClient = async (id: string) => {
     });
     return client;
   } catch (error) {
-    console.error("Error removing client:", error);
     throw new Error("Error removing client");
   }
 };
@@ -80,7 +76,6 @@ export const getClientById = async (id: string) => {
     });
     return client;
   } catch (error) {
-    console.error("Error fetching user:", error);
     throw new Error("Error fetching user");
   }
 };

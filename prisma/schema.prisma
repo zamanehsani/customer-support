@@ -31,7 +31,6 @@ model Clients {
   license      String?
   isActive     Boolean   @default(true)
   isSuspensed  Boolean   @default(false)
-  logs         Logs[]
 }
 
 model Users {
@@ -54,6 +53,4 @@ model Logs {
   action    String
   details   String
   userAgent String
-  client    Clients @relation(fields: [clientId], references: [id])
-  clientId  String
 }
