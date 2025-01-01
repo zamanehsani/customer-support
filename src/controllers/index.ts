@@ -9,7 +9,8 @@ import {
 
 export const addClient = async (req: Request, res: Response) => {
   try {
-    const user = await addClientService(req.body);
+    const user = await addClientService(req);
+
     res.status(201).json(user);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

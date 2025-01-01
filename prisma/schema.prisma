@@ -34,6 +34,18 @@ model Clients {
   logs         Logs[]
 }
 
+model Users {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  name      String
+  email     String
+  password  String
+  roles     String[]
+  photo     String?
+  document  String?
+  phone     String?
+}
+
 
 model Logs {
   id        String   @id @default(uuid())
