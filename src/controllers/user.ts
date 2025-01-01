@@ -82,7 +82,6 @@ export const addUser = async (req: Request, res: Response) => {
       res.status(403).json({ error: "forbidden" });
       return;
     }
-    console.log("creating user");
 
     const { name, email, password, phone, roles } = req.body;
     if (!name || !email || !password || !phone || !roles) {

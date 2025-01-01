@@ -1,27 +1,24 @@
 import { PrismaClient } from "@prisma/client";
+import { Response, Request } from "express";
 import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
-export const addClient = async (req: any) => {
+export const addClient = async (req: Request, res: Response) => {
   try {
-    // if data is not provided or not in the right format, send proper error message to the front
-    if (!req.body || Object.keys(req.body).length === 0) {
-      throw new Error("Please provide the client data.");
-    }
-
     if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined");
+      throw new Error("JWT_SECRET is not defined.");
     }
+    const date = new Date();
+    const isActive = true;
 
-    /**
-     * TOOD:
-     * 1. Validate the form data
-     * 2. Add user and roles to the license
-     * 3. Add expiration date to the license
-     */
     const license = jwt.sign(
-      { id: "user", role: "user.role" },
+      {
+        issue_date: date,
+        isActive: isActive,
+        email: req.body.email,
+        name: req.body.name,
+      },
       process.env.JWT_SECRET,
       {
         expiresIn: "1y",
@@ -30,23 +27,6 @@ export const addClient = async (req: any) => {
 
     const client = await prisma.clients.create({
       data: { license, ...req.body },
-    });
-
-    // create a log entry
-    // save a log record for the client creation as well
-    /**
-     * TODO:
-     * 1. Add the user (based on ID) to the log record
-     * 2. Add the user agent (the request details of ip, browser, etc)
-     */
-    await prisma.logs.create({
-      data: {
-        action: "client.created",
-        details: `${client}`,
-        user: "admin",
-        clientId: client.id as string,
-        userAgent: "user-agent",
-      },
     });
 
     return client;
