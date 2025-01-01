@@ -5,7 +5,7 @@ import {
   removeClient as removeClientService,
   getClientBySearch as getClientBySearchService,
   getClientById as getClientByIdService,
-} from "../services";
+} from "../services/client";
 
 export const addClient = async (req: Request, res: Response) => {
   try {
