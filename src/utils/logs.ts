@@ -12,7 +12,6 @@ export const addLog = async (data: {
     /**
      * Get data from param and add a Logs entery
      */
-    console.log("saving loggs....", data);
     const log = await prisma.logs.create({
       data,
     });

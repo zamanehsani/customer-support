@@ -9,6 +9,8 @@ import {
   getClientById as getClientByIdService,
 } from "../services/client";
 
+import { addLog } from "../utils/logs";
+
 const prisma = new PrismaClient();
 
 export const addClient = async (req: Request, res: Response) => {
@@ -67,13 +69,31 @@ export const addClient = async (req: Request, res: Response) => {
       return;
     }
 
-    const user = await addClientService(req, res);
+    const client = await addClientService(req, res);
 
     /**
      * TODO: Add logs of client creation
      */
 
-    res.status(201).json(user);
+    res.status(201).json(client);
+
+    // save a log
+
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      req.headers["x-real-ip"] ||
+      req.headers["x-forwarded-for"];
+
+    const userAgent = req.headers["user-agent"];
+
+    // add a log
+    const log = await addLog({
+      user: decodedToken?.user.id,
+      action: "client.created",
+      details: JSON.stringify(client),
+      userAgent: userAgent + " " + ip,
+    });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -119,6 +139,24 @@ export const updateClient = async (req: Request, res: Response) => {
     const { id } = req.params;
     const client = await updateClientService(id, req.body);
     res.json(client);
+
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      req.headers["x-real-ip"] ||
+      req.headers["x-forwarded-for"];
+
+    const userAgent = req.headers["user-agent"];
+
+    // add a log
+    const log = await addLog({
+      user: decodedToken.user.id,
+      action: "client.updated",
+      details: JSON.stringify(client),
+      userAgent: userAgent + " " + ip,
+    });
+
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
@@ -161,6 +199,24 @@ export const removeClient = async (req: Request, res: Response) => {
     const client = await removeClientService(id);
 
     res.json(client);
+
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      req.headers["x-real-ip"] ||
+      req.headers["x-forwarded-for"];
+
+    const userAgent = req.headers["user-agent"];
+
+    // add a log
+    const log = await addLog({
+      user: decodedToken.user.id,
+      action: "client.removed",
+      details: JSON.stringify(client),
+      userAgent: userAgent + " " + ip,
+    });
+
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

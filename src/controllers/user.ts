@@ -54,7 +54,6 @@ export const login = async (req: Request, res: Response) => {
     res.status(200).json({ user, token });
 
     // save a log as well
-    console.log("saving loggs....");
     const ip =
       req.headers["x-forwarded-for"] ||
       req.socket.remoteAddress ||
@@ -131,6 +130,24 @@ export const addUser = async (req: Request, res: Response) => {
 
     // const user = 0;
     res.status(201).json(user);
+
+    const ip =
+      req.headers["x-forwarded-for"] ||
+      req.socket.remoteAddress ||
+      req.headers["x-real-ip"] ||
+      req.headers["x-forwarded-for"];
+
+    const userAgent = req.headers["user-agent"];
+
+    // add a log
+    const log = await addLog({
+      user: user.id,
+      action: "user.created",
+      details: user.email + " created",
+      userAgent: userAgent + " " + ip,
+    });
+
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
