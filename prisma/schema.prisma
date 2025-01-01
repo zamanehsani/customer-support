@@ -12,7 +12,7 @@ datasource db {
 model Clients {
   id           String    @id @default(uuid())
   name         String
-  email        String
+  email        String   @unique
   phone        String
   address      String?
   city         String?
@@ -38,7 +38,7 @@ model Users {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   name      String
-  email     String
+  email     String  @unique
   password  String
   roles     String[]
   photo     String?
