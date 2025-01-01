@@ -5,6 +5,8 @@ import { client_routes } from "./routes/client";
 import { user_routes } from "./routes/user";
 import { PrismaClient } from "@prisma/client";
 
+import { admin_route } from "./utils/userAdmin";
+
 dotenv.config();
 
 export const app: Express = express();
@@ -16,6 +18,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Customer Support service running");
 });
 
+app.use("/admin", admin_route);
 app.use("/support", client_routes);
 app.use("/user", user_routes);
 
