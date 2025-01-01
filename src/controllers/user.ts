@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,6 @@ export const login = async (req: Request, res: Response) => {
     // get the requst name, email, and password
     const { email, password } = req.body;
 
-    console.log("req body is was not empty. continue...", email, password);
     // check if the email and password are provided
     if (!email || !password) {
       throw new Error("Please provide email and password");
@@ -23,7 +23,30 @@ export const login = async (req: Request, res: Response) => {
       throw new Error("Please provide a valid email");
     }
 
-    console.log("email and passwoue...");
+    const userwithPass = await prisma.users.findUnique({
+      where: { email },
+    });
+
+    // check the user password with the req.body password. user password is hashed
+    if (!userwithPass) {
+      throw new Error("user not found!");
+    }
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      userwithPass.password
+    );
+    if (!isPasswordValid) {
+      throw new Error("Invalid email or password");
+    }
+
+    const { password: _, ...user } = userwithPass;
+    // generate a token
+    const token = jwt.sign({ user: user }, process.env.JWT_SECRET as string, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ user, token });
+    return;
   } catch (error: any) {
     res.status(500).json({ error: error.message });
     return;
