@@ -54,3 +54,11 @@ model Logs {
   details   String
   userAgent String
 }
+
+
+model licenseCheck {
+  id        Int   @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  client    String?
+  details   String?
+}
