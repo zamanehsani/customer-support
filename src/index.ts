@@ -6,6 +6,7 @@ import { user_routes } from "./routes/user";
 import { PrismaClient } from "@prisma/client";
 
 import { admin_route } from "./utils/userAdmin";
+import { licenseCheck } from "./controllers/licenseCheck";
 
 dotenv.config();
 
@@ -21,7 +22,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/admin", admin_route);
 app.use("/support", client_routes);
 app.use("/user", user_routes);
-
+app.use("/license-check", licenseCheck);
 // connect to postgres
 const prisma = new PrismaClient();
 prisma.$connect().then(() => {
