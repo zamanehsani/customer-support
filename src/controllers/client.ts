@@ -18,38 +18,8 @@ export const addClient = async (req: Request, res: Response) => {
     /** Please remove the validations, authorizations and authentications blocks from here
      * and use the middleware to handle them
      */
-
     if (!req.body || Object.keys(req.body).length === 0) {
       res.status(400).json({ error: "Please provide the client data." });
-      return;
-    }
-
-    // validate the request
-    const auth = req.headers.authorization;
-    if (!auth) {
-      res.status(401).json({ error: "Not authorized" });
-      return;
-      // throw new Error("Not authorized");
-    }
-    // validate the token
-    const token = auth.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "No token provided." });
-      return;
-    }
-
-    //   validate the premissions
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const decodedToken = decoded as jwt.JwtPayload & { user: any };
-
-    if (!decoded || !decodedToken.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    // if inside decoded. user.roles includes "admin" then create the user
-    if (!decodedToken.user?.roles.includes("admin")) {
-      res.status(403).json({ error: "Not enough permissions" });
       return;
     }
 
@@ -70,14 +40,7 @@ export const addClient = async (req: Request, res: Response) => {
     }
 
     const client = await addClientService(req, res);
-
-    /**
-     * TODO: Add logs of client creation
-     */
-
     res.status(201).json(client);
-
-    // save a log
 
     const ip =
       req.headers["x-forwarded-for"] ||
@@ -89,7 +52,7 @@ export const addClient = async (req: Request, res: Response) => {
 
     // add a log
     const log = await addLog({
-      user: decodedToken?.user.id,
+      user: req?.user.id,
       action: "client.created",
       details: JSON.stringify(client),
       userAgent: userAgent + " " + ip,
@@ -107,35 +70,6 @@ export const updateClient = async (req: Request, res: Response) => {
       return;
     }
 
-    // validate the request
-    const auth = req.headers.authorization;
-    if (!auth) {
-      res.status(401).json({ error: "Not authorized" });
-      return;
-      // throw new Error("Not authorized");
-    }
-    // validate the token
-    const token = auth.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "No token provided." });
-      return;
-    }
-
-    //   validate the premissions
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const decodedToken = decoded as jwt.JwtPayload & { user: any };
-
-    if (!decoded || !decodedToken.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    // if inside decoded. user.roles includes "admin" then create the user
-    if (!decodedToken.user?.roles.includes("admin")) {
-      res.status(403).json({ error: "Not enough permissions" });
-      return;
-    }
-
     const { id } = req.params;
     const client = await updateClientService(id, req.body);
     res.json(client);
@@ -150,7 +84,7 @@ export const updateClient = async (req: Request, res: Response) => {
 
     // add a log
     const log = await addLog({
-      user: decodedToken.user.id,
+      user: req.user.id,
       action: "client.updated",
       details: JSON.stringify(client),
       userAgent: userAgent + " " + ip,
@@ -164,37 +98,6 @@ export const updateClient = async (req: Request, res: Response) => {
 
 export const removeClient = async (req: Request, res: Response) => {
   try {
-    /** validations and authorizations */
-
-    // validate the request
-    const auth = req.headers.authorization;
-    if (!auth) {
-      res.status(401).json({ error: "Not authorized" });
-      return;
-      // throw new Error("Not authorized");
-    }
-    // validate the token
-    const token = auth.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "No token provided." });
-      return;
-    }
-
-    //   validate the premissions
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const decodedToken = decoded as jwt.JwtPayload & { user: any };
-
-    if (!decoded || !decodedToken.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    // if inside decoded. user.roles includes "admin" then create the user
-    if (!decodedToken.user?.roles.includes("admin")) {
-      res.status(403).json({ error: "Not enough permissions" });
-      return;
-    }
-
     const { id } = req.params;
     const client = await removeClientService(id);
 
@@ -210,7 +113,7 @@ export const removeClient = async (req: Request, res: Response) => {
 
     // add a log
     const log = await addLog({
-      user: decodedToken.user.id,
+      user: req.user.id,
       action: "client.removed",
       details: JSON.stringify(client),
       userAgent: userAgent + " " + ip,
@@ -227,37 +130,6 @@ export const getClientById = async (
   res: Response
 ): Promise<any> => {
   try {
-    /** validations and authorizations */
-
-    // validate the request
-    const auth = req.headers.authorization;
-    if (!auth) {
-      res.status(401).json({ error: "Not authorized" });
-      return;
-      // throw new Error("Not authorized");
-    }
-    // validate the token
-    const token = auth.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "No token provided." });
-      return;
-    }
-
-    //   validate the premissions
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const decodedToken = decoded as jwt.JwtPayload & { user: any };
-
-    if (!decoded || !decodedToken.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    // if inside decoded. user.roles includes "admin" then create the user
-    if (!decodedToken.user?.roles.includes("admin")) {
-      res.status(403).json({ error: "Not enough permissions" });
-      return;
-    }
-
     const { id } = req.params;
     const client = await getClientByIdService(id);
     if (!client) {
@@ -277,35 +149,6 @@ export const getClientBySearch = async (
     /** validations and authorizations */
     if (!req.query || Object.keys(req.query).length === 0) {
       res.status(400).json({ error: "Please provide the client query." });
-      return;
-    }
-
-    // validate the request
-    const auth = req.headers.authorization;
-    if (!auth) {
-      res.status(401).json({ error: "Not authorized" });
-      return;
-      // throw new Error("Not authorized");
-    }
-    // validate the token
-    const token = auth.split(" ")[1];
-    if (!token) {
-      res.status(401).json({ error: "No token provided." });
-      return;
-    }
-
-    //   validate the premissions
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    const decodedToken = decoded as jwt.JwtPayload & { user: any };
-
-    if (!decoded || !decodedToken.user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
-
-    // if inside decoded. user.roles includes "admin" then create the user
-    if (!decodedToken.user?.roles.includes("admin")) {
-      res.status(403).json({ error: "Not enough permissions" });
       return;
     }
 

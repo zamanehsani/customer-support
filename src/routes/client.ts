@@ -7,10 +7,12 @@ import {
   getClientById,
 } from "../controllers/client";
 
+import { authenticate, authorize } from "../middleware";
+
 export const client_routes = express.Router();
 
-client_routes.post("/", addClient);
-client_routes.patch("/:id", updateClient);
-client_routes.delete("/:id", removeClient);
-client_routes.get("/search", getClientBySearch);
-client_routes.get("/:id", getClientById);
+client_routes.post("/", authenticate, authorize, addClient);
+client_routes.patch("/:id", authenticate, authorize, updateClient);
+client_routes.delete("/:id", authenticate, authorize, removeClient);
+client_routes.get("/search", authenticate, authorize, getClientBySearch);
+client_routes.get("/:id", authenticate, authorize, getClientById);
