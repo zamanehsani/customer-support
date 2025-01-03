@@ -7,12 +7,14 @@ import { PrismaClient } from "@prisma/client";
 
 import { admin_route } from "./utils/userAdmin";
 import { licenseCheck } from "./controllers/licenseCheck";
+import cors from "cors";
 
 dotenv.config();
 
 export const app: Express = express();
 const port = process.env.PORT || 3002;
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
