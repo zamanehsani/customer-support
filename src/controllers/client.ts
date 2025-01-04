@@ -152,11 +152,14 @@ export const getClientBySearch = async (
       return;
     }
 
+    console.log("req.query: ", req.query);
+
     const client = await getClientBySearchService(req.query);
     if (!client || client.length === 0) {
       console.log("No client found");
       return res.status(404).json({ message: "No client found" });
     }
+    console.log("client: ", client);
     res.json(client);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
