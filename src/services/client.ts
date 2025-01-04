@@ -137,7 +137,10 @@ export const getClientBySearch = async (query: any) => {
       throw new Error("No cleints found");
     }
 
-    return clients;
+    const orderedClients = clients.sort((a, b) => {
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    });
+    return orderedClients;
   } catch (error: any) {
     console.error("Error searching clients:", error);
     throw new Error(error.message);
