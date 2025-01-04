@@ -14,6 +14,7 @@ model Clients {
   name         String
   email        String   @unique
   phone        String
+  plan         String?
   address      String?
   city         String?
   state        String?

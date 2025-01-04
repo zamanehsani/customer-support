@@ -9,8 +9,20 @@ export const addClient = async (req: Request, res: Response) => {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not defined.");
     }
+
     const date = new Date();
     const isActive = true;
+    const plan = req.body.plan || "free";
+    var valid_to = date;
+
+    if (plan === "6months") {
+      valid_to = new Date(date.setMonth(date.getMonth() + 6));
+    }
+    if (plan === "1year") {
+      valid_to = new Date(date.setFullYear(date.getFullYear() + 1));
+    }
+
+    req.body.valid_to = valid_to;
 
     const license = jwt.sign(
       {
@@ -21,16 +33,18 @@ export const addClient = async (req: Request, res: Response) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1y",
+        expiresIn: plan === "free" ? "7d" : plan === "6months" ? "6m" : "1y",
       }
     );
 
+    req.body.license = license;
     const client = await prisma.clients.create({
-      data: { license, ...req.body },
+      data: { ...req.body },
     });
 
     return client;
   } catch (error) {
+    console.error("Error adding client:", error);
     throw new Error("Error adding client");
   }
 };
