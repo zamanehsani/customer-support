@@ -31,7 +31,7 @@ model Clients {
   WhatsApp     String?
   license      String?
   isActive     Boolean   @default(true)
-  isSuspensed  Boolean   @default(false)
+  isSuspended  Boolean   @default(false)
 }
 
 model Users {
